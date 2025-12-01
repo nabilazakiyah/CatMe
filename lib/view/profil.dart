@@ -10,10 +10,6 @@ class ProfilPage extends StatefulWidget {
 }
 
 class _ProfilPageState extends State<ProfilPage> {
-  static const String name = 'Nama: Nabila Marwa Z';
-  static const String nim = 'NIM: 129230001';
-  static const String kelas = 'Kelas: SI - A';
-  String bio = 'Alhamdulillah belajar banyak dari PAM skrg';
   List<CatModel> riwayat = [];
   List<CatModel> wishlist = [];
   bool _isLoadingRiwayat = true;
@@ -22,19 +18,8 @@ class _ProfilPageState extends State<ProfilPage> {
   @override
   void initState() {
     super.initState();
-    _loadBio();
     _loadRiwayat();
     _loadWishlist();
-  }
-
-  Future<void> _loadBio() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (mounted) {
-      setState(() {
-        bio = prefs.getString('bio') ??
-            'Sangat berkesan Mobile di semester ini dengan harus maksimal eksplor pelajaran sendiri karena tidak bisa hanya mengandalkan pmateri di praktikum maupun kelas saja';
-      });
-    }
   }
 
   Future<void> _loadRiwayat() async {
@@ -94,6 +79,41 @@ class _ProfilPageState extends State<ProfilPage> {
     }
   }
 
+ Widget _buildProfileCard({
+  required String imagePath,
+  required String name,
+  required String nim,
+  required String kelas,
+}) {
+  return SizedBox(
+    width: double.infinity,
+    child: Card(
+      elevation: 4,
+      color: Colors.orange[50],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 70,
+              backgroundImage: AssetImage(imagePath),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Nama: $name',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text('NIM: $nim', style: const TextStyle(fontSize: 16)),
+            Text('Kelas: $kelas', style: const TextStyle(fontSize: 16)),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,38 +142,22 @@ class _ProfilPageState extends State<ProfilPage> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              const CircleAvatar(
-                  radius: 70,
-                  backgroundImage: AssetImage('assets/profile.jpg')),
-              const SizedBox(height: 24),
-              const Text(name,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              const Text(nim, style: TextStyle(fontSize: 16)),
-              const Text(kelas, style: TextStyle(fontSize: 16)),
-              const SizedBox(height: 32),
-              Card(
-                elevation: 4,
-                color: Colors.orange[50],
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      const Text('Kesan & Pesan PAM',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.orange)),
-                      const SizedBox(height: 12),
-                      Text(bio,
-                          style: const TextStyle(fontSize: 15),
-                          textAlign: TextAlign.center),
-                    ],
-                  ),
-                ),
+              _buildProfileCard(
+                imagePath: 'assets/profile.jpg',
+                name: 'Nabila Marwa Zakiyah',
+                nim: '124230001',
+                kelas: 'SI - C',
               ),
+              
+              const SizedBox(height: 16),
+              
+              _buildProfileCard(
+                imagePath: 'assets/profile2.jpg',
+                name: 'Nashwa Luthfiya',
+                nim: '124230016',
+                kelas: 'SI - C',
+              ),
+
               const SizedBox(height: 32),
 
               Card(
