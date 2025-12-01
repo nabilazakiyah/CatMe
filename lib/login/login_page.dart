@@ -21,16 +21,13 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     setState(() => _isLoading = true);
     final prefs = await SharedPreferences.getInstance();
-
     final inputEmail = _emailCtrl.text.trim();
     final inputPass = _passCtrl.text;
-
     if (inputEmail.isEmpty || inputPass.isEmpty) {
       _showSnackBar('Email dan password harus diisi!', Colors.red);
       setState(() => _isLoading = false);
       return;
     }
-
     if (inputPass.length < 6) {
       _showSnackBar('Password minimal 6 karakter!', Colors.red);
       setState(() => _isLoading = false);
@@ -49,7 +46,6 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       _showSnackBar('Email atau password salah!', Colors.red);
     }
-
     setState(() => _isLoading = false);
   }
 
@@ -64,8 +60,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // === BAGIAN 1: Mengganti Background Halaman Keseluruhan (Scaffold) ===
-      // Anda bisa mengganti Colors.white dengan warna lain, misal Colors.grey[100]
       backgroundColor: Colors.orange[50],
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -79,7 +73,6 @@ class _LoginPageState extends State<LoginPage> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 30),
-            // === BAGIAN 2: TextField Email ===
             TextField(
               controller: _emailCtrl,
               decoration: InputDecoration(
@@ -87,16 +80,13 @@ class _LoginPageState extends State<LoginPage> {
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 prefixIcon: const Icon(Icons.email),
-
-                // Tambahkan dua properti ini untuk warna background input
                 filled: true,
                 fillColor: const Color.fromARGB(255, 255, 255,
-                    255), // Ganti warna kotak input Email di sini
+                    255),
               ),
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16),
-            // === BAGIAN 3: TextField Password ===
             TextField(
               controller: _passCtrl,
               decoration: InputDecoration(
@@ -105,10 +95,9 @@ class _LoginPageState extends State<LoginPage> {
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 prefixIcon: const Icon(Icons.lock),
 
-                // Tambahkan dua properti ini untuk warna background input
                 filled: true,
                 fillColor: const Color.fromARGB(255, 255, 255,
-                    255), // Ganti warna kotak input Password di sini
+                    255),
               ),
               obscureText: true,
             ),

@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// Tambahkan import notifikasi yang diperlukan
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import '../controller/cat_view_controller.dart';
-import '../model/cat_model.dart';
+import 'package:flutter_application_1/controller/cat_view_controller.dart';
+import 'package:flutter_application_1/model/cat_model.dart';
 
 class CatView extends StatefulWidget {
   const CatView({super.key});
@@ -14,26 +13,20 @@ class CatView extends StatefulWidget {
 }
 
 class _CatViewState extends State<CatView> {
-  // 1. Inisialisasi Plugin (buat di luar fungsi)
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
     super.initState();
-    // 2. Panggil fungsi permintaan izin saat halaman dimuat pertama kali
     requestNotificationPermissions();
   }
 
-  // 3. Fungsi untuk Meminta Izin Notifikasi (Sama seperti yang Anda berikan)
   void requestNotificationPermissions() async {
-    // Meminta izin notifikasi untuk Android 13+
     final status = await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
-
-    // Untuk iOS, izin diminta melalui metode lain saat init, tapi ini adalah langkah penting untuk Android
     print('Notification Permission Status: $status');
   }
 
@@ -46,13 +39,50 @@ class _CatViewState extends State<CatView> {
           title: const Text('CatMe'),
           backgroundColor: Colors.orange,
           actions: [
+
+            Consumer<CatViewController>(
+              builder: (_, ctrl, __) {
+                return PopupMenuButton<SortOption>(
+                  icon: Row(
+                    children: [
+                      const Icon(Icons.sort, color: Colors.white),
+                      const SizedBox(width: 4),
+                      Text(
+                        ctrl.getSortLabel(),
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  onSelected: (option) => ctrl.setSortOption(option),
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(
+                      value: SortOption.nameAZ,
+                      child: Text('Nama: A-Z'),
+                    ),
+                    const PopupMenuItem(
+                      value: SortOption.nameZA,
+                      child: Text('Nama: Z-A'),
+                    ),
+                    const PopupMenuItem(
+                      value: SortOption.priceLowToHigh,
+                      child: Text('Harga: Termurah'),
+                    ),
+                    const PopupMenuItem(
+                      value: SortOption.priceHighToLow,
+                      child: Text('Harga: Termahal'),
+                    ),
+                  ],
+                );
+              },
+            ),
+
             Consumer<CatViewController>(
               builder: (_, ctrl, __) {
                 return PopupMenuButton<String>(
                   icon: const Icon(Icons.money, color: Colors.white),
                   onSelected: (cur) {
                     ctrl.currency = cur;
-                    ctrl.filter('', cur);
+                    ctrl.filter(ctrl.searchQuery, cur);
                   },
                   itemBuilder: (_) => [
                     const PopupMenuItem(value: 'IDR', child: Text('IDR')),

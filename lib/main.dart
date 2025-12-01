@@ -1,20 +1,17 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/login/registrasi_page.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'login/login_page.dart';
-import 'view/cat_view.dart';
-import 'view/lokasi.dart';
-import 'view/profil.dart';
-import 'view/cat_detail_page.dart';
-import 'model/cat_model.dart';
+import 'package:flutter_application_1/login/login_page.dart';
+import 'package:flutter_application_1/view/cat_view.dart';
+import 'package:flutter_application_1/view/lokasi.dart';
+import 'package:flutter_application_1/view/profil.dart';
+import 'package:flutter_application_1/view/cat_detail_page.dart';
+import 'package:flutter_application_1/model/cat_model.dart';
 
 final FlutterLocalNotificationsPlugin notifications = FlutterLocalNotificationsPlugin();
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await notifications.initialize(
     const InitializationSettings(android: AndroidInitializationSettings('@mipmap/ic_launcher')),
   );
@@ -26,9 +23,8 @@ const channel = AndroidNotificationChannel(
   playSound: true,
   enableVibration: true,
 );
+
 await notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
-
-
   final prefs = await SharedPreferences.getInstance();
   final firstTime = prefs.getBool('first_time') ?? true;
   if (firstTime) {
@@ -36,7 +32,6 @@ await notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNot
     await prefs.setBool('first_time', false);
   }
   final loggedIn = prefs.getBool('logged_in') ?? false;
-
   runApp(MyApp(initialRoute: loggedIn ? '/home' : '/login'));
 }
 
@@ -75,7 +70,6 @@ class MainNavigator extends StatefulWidget {
 class _MainNavigatorState extends State<MainNavigator> {
   int index = 0;
   final pages = [const CatView(), const LokasiPage(), const ProfilPage()];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

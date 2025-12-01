@@ -1,4 +1,3 @@
-
 import 'package:flutter_application_1/model/cat_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -6,7 +5,6 @@ import 'package:path/path.dart';
 
 class CatService {
   static Database? _db;
-
   Future<Database> get db async {
   
     _db ??= await _init();
@@ -37,7 +35,6 @@ class CatService {
             adoptionFeeIDR REAL
           )
         ''');
-
         await _insertDummyCats(db);
       },
     );  

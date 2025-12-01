@@ -20,7 +20,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _register() async {
-    // ... (Logika _register tetap sama)
     setState(() => _isLoading = true);
 
     if (_emailCtrl.text.trim().isEmpty) {
@@ -42,8 +41,6 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     final prefs = await SharedPreferences.getInstance();
-
-    // Menggunakan key yang lebih spesifik untuk cek email yang sudah terdaftar
     final existingEmail = prefs.getString('reg_email');
     if (existingEmail == _emailCtrl.text.trim()) {
       _showSnackBar('Email sudah terdaftar!', Colors.orange);
@@ -57,7 +54,6 @@ class _RegisterPageState extends State<RegisterPage> {
     await prefs.setBool('logged_in', true);
 
     if (mounted) {
-      // Pastikan '/home' sudah terdefinisi di MaterialApp routes Anda
       Navigator.pushReplacementNamed(context, '/home');
     }
 
@@ -75,38 +71,28 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // =============================================================
-      // 1. GANTI WARNA BACKGROUND HALAMAN KESELURUHAN (SCAFFOLD)
-      // =============================================================
-      // Ganti Colors.white dengan warna yang Anda inginkan, misalnya Colors.grey[50]
       backgroundColor: Colors.orange[50],
 
       appBar: AppBar(
-        // Menghapus title 'Register' agar hanya ada tombol Back seperti di gambar
-        // Title dihilangkan, cukup tombol Back
-        // title: const Text('Register'),
-        backgroundColor: Colors.transparent, // Membuat AppBar transparan
-        elevation: 0, // Menghilangkan bayangan
-        foregroundColor: Colors.black, // Warna ikon panah
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black,
       ),
-      // PERBAIKAN: Bungkus konten dengan SingleChildScrollView
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
-            horizontal: 20, vertical: 10), // Ubah padding
+            horizontal: 20, vertical: 10),
         child: Column(
-          // Ganti mainAxisAlignment dari center ke start agar mulai dari atas
-          // CrossAxisAlignment.stretch berguna agar elemen memenuhi lebar horizontal
+
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            // Icon dan Teks Judul
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 20.0),
               child: Column(
                 children: [
                   Icon(Icons.pets,
                       size: 80,
-                      color: Colors.orange), // Ukuran icon disesuaikan
+                      color: Colors.orange),
                   SizedBox(height: 10),
                   Text(
                     'Daftar Akun CatMe!',
@@ -116,28 +102,17 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
 
-            // TextField Email
             const SizedBox(height: 30),
             TextField(
               controller: _emailCtrl,
               decoration: InputDecoration(
                 labelText: 'Email',
-
-                // =============================================================
-                // 2A. SET 'filled: true' AGAR fillColor BISA DITERAPKAN
-                // =============================================================
                 filled: true,
-                // =============================================================
-                // 2B. GANTI WARNA BACKGROUND KOTAK INPUT EMAIL DI SINI
-                // =============================================================
                 fillColor: const Color.fromARGB(
-                    255, 255, 255, 255), // Contoh warna background kotak input
-
-                // Tampilan border seperti pada gambar
+                    255, 255, 255, 255),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 prefixIcon: const Icon(Icons.email),
-                // Sesuaikan warna border jika perlu
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.grey),
                   borderRadius: BorderRadius.circular(10),
@@ -151,22 +126,14 @@ class _RegisterPageState extends State<RegisterPage> {
               keyboardType: TextInputType.emailAddress,
             ),
 
-            // TextField Password
             const SizedBox(height: 16),
             TextField(
               controller: _passCtrl,
               decoration: InputDecoration(
                 labelText: 'Password',
-
-                // =============================================================
-                // 3A. SET 'filled: true' AGAR fillColor BISA DITERAPKAN
-                // =============================================================
                 filled: true,
-                // =============================================================
-                // 3B. GANTI WARNA BACKGROUND KOTAK INPUT PASSWORD DI SINI
-                // =============================================================
                 fillColor: const Color.fromARGB(
-                    255, 255, 255, 255), // Contoh warna background kotak input
+                    255, 255, 255, 255),
 
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
@@ -184,22 +151,14 @@ class _RegisterPageState extends State<RegisterPage> {
               obscureText: true,
             ),
 
-            // TextField Konfirmasi Password
             const SizedBox(height: 16),
             TextField(
               controller: _confirmCtrl,
               decoration: InputDecoration(
                 labelText: 'Konfirmasi Password',
-
-                // =============================================================
-                // 4A. SET 'filled: true' AGAR fillColor BISA DITERAPKAN
-                // =============================================================
                 filled: true,
-                // =============================================================
-                // 4B. GANTI WARNA BACKGROUND KOTAK INPUT KONF. PASSWORD DI SINI
-                // =============================================================
                 fillColor: const Color.fromARGB(
-                    255, 255, 255, 255), // Contoh warna background kotak input
+                    255, 255, 255, 255),
 
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
@@ -218,7 +177,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
 
             const SizedBox(
-                height: 30), // Tinggikan sedikit jarak sebelum tombol
+                height: 30),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -228,7 +187,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   padding: const EdgeInsets.all(16),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
-                  // Menggunakan foregroundColor untuk warna text/progress
                   foregroundColor: Colors.white,
                 ),
                 child: _isLoading
@@ -237,14 +195,12 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
 
-            // Tombol Login
             const SizedBox(height: 16),
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('Sudah punya akun? Login',
                   style: TextStyle(color: Colors.orange)),
             ),
-            // Tambahkan padding tambahan di bawah jika diperlukan untuk memastikan semua elemen terlihat
             const SizedBox(height: 20),
           ],
         ),

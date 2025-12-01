@@ -10,8 +10,8 @@ class CatModel {
   final String description;
   final double adoptionFeeIDR;
   final String? date;
+  bool isWishlisted;
 
-  
   CatModel({
     this.id,
     required this.breed,
@@ -22,6 +22,7 @@ class CatModel {
     required this.adoptionFeeIDR,
     required this.description,
     this.date,
+    this.isWishlisted = false,
   });
 
   CatModel.forHistory({
@@ -33,7 +34,8 @@ class CatModel {
         coat = '',
         pattern = '',
         description = '',
-        adoptionFeeIDR = 0;
+        adoptionFeeIDR = 0,
+        isWishlisted = false;
 
   factory CatModel.fromJson(Map<String, dynamic> json) {
     final fee = 500000 + (json['id']?.hashCode ?? 0).abs() % 4500000;
@@ -46,16 +48,24 @@ class CatModel {
       pattern: 'Various',
       adoptionFeeIDR: fee.toDouble(),
       description: json['description'] ?? 'Kucing lucu!',
+      isWishlisted: false,
     );
   }
 
   factory CatModel.fromMap(Map<String, dynamic> map) {
-    return CatModel.forHistory(
+    return CatModel(
+      id: map['id'] as int?,
       breed: map['breed'] as String,
-      date: map['date'] as String,
+      origin: map['origin'] as String? ?? '',
+      country: map['country'] as String? ?? '',
+      coat: map['coat'] as String? ?? '',
+      pattern: map['pattern'] as String? ?? '',
+      adoptionFeeIDR: map['adoptionFeeIDR'] as double? ?? 0.0,
+      description: map['description'] as String? ?? '',
+      date: map['date'] as String?,
+      isWishlisted: (map['isWishlisted'] as int? ?? 0) == 1,
     );
   }
-
 
   Map<String, dynamic> toMap() {
     return {
@@ -68,33 +78,34 @@ class CatModel {
       'adoptionFeeIDR': adoptionFeeIDR,
       'description': description,
       'date': date,
+      'isWishlisted': isWishlisted ? 1 : 0,
     };
   }
+
   static String formatCurrency(double amount, String currency) {
     switch (currency) {
       case 'USD':
-        return '\$${ (amount / 15800).toStringAsFixed(2) }'; 
+        return '\$${(amount / 15800).toStringAsFixed(2)}';
       case 'KRW':
-        return '₩${ (amount / 11.5).toStringAsFixed(0) }'; 
+        return '₩${(amount / 11.5).toStringAsFixed(0)}';
       case 'GBP':
-        return '£${ (amount / 20000).toStringAsFixed(2) }'; 
+        return '£${(amount / 20000).toStringAsFixed(2)}';
       case 'SAR':
-        return 'ر.س ${(amount / 4200).toStringAsFixed(2)}'; 
+        return 'ر.س ${(amount / 4200).toStringAsFixed(2)}';
       default:
         return NumberFormat.currency(locale: 'id', symbol: 'Rp ').format(amount);
     }
   }
 
-
   String get formattedDate {
-  if (date == null || date!.isEmpty) return 'Tidak tersedia';
-  try {
-    final dt = DateTime.parse(date!);
-    return DateFormat('dd MMM yyyy, HH:mm').format(dt);
-  } catch (e) {
-    return date!;
+    if (date == null || date!.isEmpty) return 'Tidak tersedia';
+    try {
+      final dt = DateTime.parse(date!);
+      return DateFormat('dd MMM yyyy, HH:mm').format(dt);
+    } catch (e) {
+      return date!;
+    }
   }
-}
 
   CatModel copyWith({
     int? id,
@@ -106,6 +117,7 @@ class CatModel {
     String? description,
     double? adoptionFeeIDR,
     String? date,
+    bool? isWishlisted,
   }) {
     return CatModel(
       id: id ?? this.id,
@@ -117,6 +129,7 @@ class CatModel {
       description: description ?? this.description,
       adoptionFeeIDR: adoptionFeeIDR ?? this.adoptionFeeIDR,
       date: date ?? this.date,
+      isWishlisted: isWishlisted ?? this.isWishlisted,
     );
   }
 }

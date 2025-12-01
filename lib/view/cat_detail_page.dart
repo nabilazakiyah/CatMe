@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/main.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../model/cat_model.dart';
-import '../controller/cat_detail_controller.dart';
-import '../service/database_service.dart';
+import 'package:flutter_application_1/model/cat_model.dart';
+import 'package:flutter_application_1/controller/cat_detail_controller.dart';
+import 'package:flutter_application_1/service/database_service.dart';
 
 class CatDetailPage extends StatefulWidget {
   final CatModel cat;
@@ -17,21 +17,19 @@ class CatDetailPage extends StatefulWidget {
 class _CatDetailPageState extends State<CatDetailPage> {
   final controller = CatDetailController();
   String? imageUrl;
-
   String _selectedCurrencyCode = '';
+  bool _isWishlisted = false;
 
   @override
   void initState() {
     super.initState();
     _loadImage();
-    // 2. MUAT PENGATURAN MATA UANG SAAT INIT
     _loadCurrencyPreference();
+    _checkWishlistStatus();
   }
 
-  // 3. FUNGSI UNTUK MEMUAT MATA UANG DARI SharedPreferences
   Future<void> _loadCurrencyPreference() async {
     final prefs = await SharedPreferences.getInstance();
-    // Ganti 'selected_currency' dengan kunci yang Anda gunakan di halaman pengaturan
     final currency = prefs.getString('selected_currency') ?? '';
 
     if (mounted) {
@@ -41,10 +39,68 @@ class _CatDetailPageState extends State<CatDetailPage> {
     }
   }
 
+  Future<void> _checkWishlistStatus() async {
+    final isInWishlist = await DatabaseService().isInWishlist(widget.cat.breed);
+    if (mounted) {
+      setState(() {
+        _isWishlisted = isInWishlist;
+      });
+    }
+  }
+
   Future<void> _loadImage() async {
     final url = await controller.loadImage(widget.cat.breed);
     if (mounted) {
       setState(() => imageUrl = url);
+    }
+  }
+
+  Future<void> _toggleWishlist() async {
+    try {
+      if (_isWishlisted) {
+        await DatabaseService().removeFromWishlist(widget.cat.breed);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("${widget.cat.breed} dihapus dari wishlist"),
+              backgroundColor: Colors.orange[700],
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)),
+              duration: const Duration(seconds: 2),
+              margin: const EdgeInsets.all(20),
+            ),
+          );
+        }
+      } else {
+        await DatabaseService().addToWishlist(widget.cat);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("${widget.cat.breed} ditambahkan ke wishlist! 🧡"),
+              backgroundColor: Colors.deepOrange,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)),
+              duration: const Duration(seconds: 2),
+              margin: const EdgeInsets.all(20),
+            ),
+          );
+        }
+      }
+
+      setState(() {
+        _isWishlisted = !_isWishlisted;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Gagal mengupdate wishlist: $e"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -189,19 +245,41 @@ class _CatDetailPageState extends State<CatDetailPage> {
                   _infoRow(Icons.pets, "Tipe: ${widget.cat.coat}"),
                   _infoRow(Icons.description,
                       "Deskripsi: ${widget.cat.description}"),
-
-                  // 4. GANTI 'IDR' YANG HARDCODE DENGAN VARIABEL STATE
                   _infoRow(Icons.money,
                       "Harga: ${CatModel.formatCurrency(widget.cat.adoptionFeeIDR, _selectedCurrencyCode)}"),
-
                   const SizedBox(height: 30),
+                  
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _toggleWishlist,
+                      icon: Icon(
+                        _isWishlisted ? Icons.favorite : Icons.favorite_border,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        _isWishlisted
+                            ? "Hapus dari Wishlist"
+                            : "Tambah ke Wishlist",
+                        style: const TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _isWishlisted ? Colors.orange[300] : Colors.deepOrange,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: _adopt,
-                      icon: const Icon(Icons.favorite, color: Colors.white),
+                      icon: const Icon(Icons.pets, color: Colors.white),
                       label: const Text("Adopsi Sekarang!",
-                          style: TextStyle(fontSize: 18)),
+                          style: TextStyle(fontSize: 18, color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         padding: const EdgeInsets.symmetric(vertical: 16),

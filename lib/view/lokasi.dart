@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -77,7 +76,7 @@ class _LokasiPageState extends State<LokasiPage> {
               children: [
                 TileLayer(
                   urlTemplate: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-                  subdomains: ['a', 'b', 'c'],
+                  subdomains: const ['a', 'b', 'c'],
                   userAgentPackageName: 'dev.fleaflet.flutter_map',
                 ),
                 MarkerLayer(

@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../model/cat_model.dart';
+import 'package:flutter_application_1/model/cat_model.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -8,7 +8,7 @@ class DatabaseService {
   DatabaseService._internal();
 
   static Database? _db;
-  static const int _version = 2; 
+  static const int _version = 3;
 
   Future<Database> get db async {
     _db ??= await _initDb();
@@ -26,8 +26,21 @@ class DatabaseService {
         await _createTables(db);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        await db.execute('DROP TABLE IF EXISTS adopsi');
-        await _createTables(db);
+        if (oldVersion < 3) {
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS wishlist (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              breed TEXT NOT NULL,
+              origin TEXT,
+              country TEXT,
+              coat TEXT,
+              pattern TEXT,
+              adoptionFeeIDR REAL,
+              description TEXT,
+              date TEXT NOT NULL
+            )
+          ''');
+        }
       },
       onOpen: (db) async {
         final tables = await db.rawQuery(
@@ -39,12 +52,25 @@ class DatabaseService {
     );
   }
 
-
   Future<void> _createTables(Database db) async {
     await db.execute('''
       CREATE TABLE adopsi (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         breed TEXT NOT NULL,
+        date TEXT NOT NULL
+      )
+    ''');
+    
+    await db.execute('''
+      CREATE TABLE wishlist (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        breed TEXT NOT NULL,
+        origin TEXT,
+        country TEXT,
+        coat TEXT,
+        pattern TEXT,
+        adoptionFeeIDR REAL,
+        description TEXT,
         date TEXT NOT NULL
       )
     ''');
@@ -67,17 +93,16 @@ class DatabaseService {
     }
   }
 
- Future<List<CatModel>> getRiwayat() async {
-  try {
-    final dbClient = await db;
-    final maps = await dbClient.query('adopsi', orderBy: 'date DESC');
-    return maps.map((m) => CatModel.fromMap(m)).toList();
-  } catch (e) {
-    debugPrint('Error getRiwayat: $e');
-    return [];
+  Future<List<CatModel>> getRiwayat() async {
+    try {
+      final dbClient = await db;
+      final maps = await dbClient.query('adopsi', orderBy: 'date DESC');
+      return maps.map((m) => CatModel.fromMap(m)).toList();
+    } catch (e) {
+      debugPrint('Error getRiwayat: $e');
+      return [];
+    }
   }
-}
-
 
   Future<void> clearRiwayat() async {
     try {
@@ -88,11 +113,82 @@ class DatabaseService {
     }
   }
 
+  Future<void> addToWishlist(CatModel cat) async {
+    try {
+      final dbClient = await db;
+      await dbClient.insert(
+        'wishlist',
+        {
+          'breed': cat.breed,
+          'origin': cat.origin,
+          'country': cat.country,
+          'coat': cat.coat,
+          'pattern': cat.pattern,
+          'adoptionFeeIDR': cat.adoptionFeeIDR,
+          'description': cat.description,
+          'date': DateTime.now().toIso8601String(),
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e) {
+      debugPrint('Error addToWishlist: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> removeFromWishlist(String breed) async {
+    try {
+      final dbClient = await db;
+      await dbClient.delete(
+        'wishlist',
+        where: 'breed = ?',
+        whereArgs: [breed],
+      );
+    } catch (e) {
+      debugPrint('Error removeFromWishlist: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<CatModel>> getWishlist() async {
+    try {
+      final dbClient = await db;
+      final maps = await dbClient.query('wishlist', orderBy: 'date DESC');
+      return maps.map((m) => CatModel.fromMap(m)).toList();
+    } catch (e) {
+      debugPrint('Error getWishlist: $e');
+      return [];
+    }
+  }
+
+  Future<bool> isInWishlist(String breed) async {
+    try {
+      final dbClient = await db;
+      final result = await dbClient.query(
+        'wishlist',
+        where: 'breed = ?',
+        whereArgs: [breed],
+      );
+      return result.isNotEmpty;
+    } catch (e) {
+      debugPrint('Error isInWishlist: $e');
+      return false;
+    }
+  }
+
+  Future<void> clearWishlist() async {
+    try {
+      final dbClient = await db;
+      await dbClient.delete('wishlist');
+    } catch (e) {
+      debugPrint('Error clearWishlist: $e');
+    }
+  }
+
   Future<void> close() async {
     final dbClient = await db;
     await dbClient.close();
     _db = null;
   }
-  
   void debugPrint(String s) {}
 }
