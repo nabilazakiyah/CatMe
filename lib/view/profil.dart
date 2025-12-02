@@ -120,7 +120,7 @@ class _ProfilPageState extends State<ProfilPage> {
       appBar: AppBar(
         title: const Text('CatMe'),
         backgroundColor: Colors.orangeAccent,
-        foregroundColor: Colors.white,
+        foregroundColor: Colors.black,
         actions: [
           TextButton(
             onPressed: () async {
