@@ -88,7 +88,7 @@ class _LokasiPageState extends State<LokasiPage> {
                       child: Column(
                         children: [
                           Image.asset('assets/cat_icon.png', width: 50), 
-                          const Text('CatMe Jogja!', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                          const Text('CatMe!', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),

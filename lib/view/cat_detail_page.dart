@@ -127,7 +127,7 @@ class _CatDetailPageState extends State<CatDetailPage> {
     await notifications.show(
       999,
       'Yeay! ${widget.cat.breed} Milikmu!',
-      'Makasih udah sayangin kucing! Jangan lupa kasih makan ya~',
+      'Makasih udah sayangin kucing! Jangan lupa kasih makan ya',
       details,
     );
 
