@@ -279,7 +279,7 @@ class _CatDetailPageState extends State<CatDetailPage> {
                       onPressed: _adopt,
                       icon: const Icon(Icons.pets, color: Colors.white),
                       label: const Text("Adopsi Sekarang!",
-                          style: TextStyle(fontSize: 18, color: Colors.white)),
+                          style: TextStyle(fontSize: 18)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         padding: const EdgeInsets.symmetric(vertical: 16),
